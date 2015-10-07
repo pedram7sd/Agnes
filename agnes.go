@@ -29,27 +29,33 @@ const AGNES_LOGO_CAP string =
 
 const AGNES_LOGO_SML string =
 `
-       ########    ##  ###            ##  ####         ###         ##
-     ##        ## ##     ##         ##      ##         #           #
-    ##          ###       ##       #         ##       #     ### #######
-    ##          ###        ##    #            ##     #     # ##       ##
+       ########    ##  ###            ##    ##        ###          ##
+     ##        ## ##     ##         ##    ####        ##           #
+    ##          ###       ##       #         ##       #     ###  ######
+    ##          ###        ##    #            ##     #     # ###      ##
     ##          ###         ##  #              ##   #        ##       ##
      ##        ## ##         ###                ## #         ##       ##
        ########    ###       ##       AGNES      ##          ##       ##
                             ###                                       ##
-                            ##                                        ##
+                            ##                                         ##
 `
+
+// global constants
 
 // define a Neural Network
 type NeuralNetwork struct {
 
+}
+
+// define a perceptron
+type Perceptron struct {
 
 }
 
 // define a Neuron
 type Neuron struct {
-    // input
-    // output
+    bias float64        // bias for desired results
+    output bool         // determine 0 or 1 as output
 }
 
 // Sigmoid function: choose between 0 and 1 based on input value
@@ -57,8 +63,6 @@ func sigmoid(input float64) float64 {
     // sigmoid(0.0) = 0.5
     return 1.0 / (1.0 + math.Pow(math.E, -input))
 }
-
-// global constants
 
 // clear the terminal screen
 func clear() {
