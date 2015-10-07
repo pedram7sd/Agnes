@@ -14,18 +14,30 @@ import ("fmt"
 
 // Agnes Logo
 // Ἁγνὴ
-const AGNES_LOGO string =
+const AGNES_LOGO_CAP string =
 `
-      ##     #           #############   ###            ####        ###
-      #     ###            ##       ##     ##            #           ##
-           #  ##           ##              # ##          #
-          #    ##          ##              #   ##        #      ### #######
-         #      ##         ##              #     ##      #     # ##       ##
-        ###########        ##              #       ##    #       ##       ##
-       #          ##       ##              #         ##  #       ##       ##
-      #            ##      ##              #           ###       ##       ##
-    ####           ####   #####          ####   AGNES    #       ##       ##
-                                                                          ##
+      ##     #          #############  ###            ####  ####        ####
+      #     ###           ##       ##    ##            #     ##          ##
+           #  ##          ##             # ##          #     ##          ##
+          #    ##         ##             #   ##        #     ##          ##
+         #      ##        ##             #     ##      #     ##############
+        ###########       ##             #       ##    #     ##          ##
+       #          ##      ##             #         ##  #     ##          ##
+      #            ##     ##             #           ###     ##          ##
+    ####           ####  #####         ####   AGNES    #    ####        ####
+`
+
+const AGNES_LOGO_SML string =
+`
+       ########    ##  ###            ##  ####         ###         ##
+     ##        ## ##     ##         ##      ##         #           #
+    ##          ###       ##       #         ##       #     ### #######
+    ##          ###        ##    #            ##     #     # ##       ##
+    ##          ###         ##  #              ##   #        ##       ##
+     ##        ## ##         ###                ## #         ##       ##
+       ########    ###       ##       AGNES      ##          ##       ##
+                            ###                                       ##
+                            ##                                        ##
 `
 
 // define a Neural Network
@@ -58,7 +70,9 @@ func clear() {
 // intro
 func intro() {
     clear()                         // clear the terminal screen
-    fmt.Println(AGNES_LOGO)         // print agnes logo
+    fmt.Println(AGNES_LOGO_CAP)     // print agnes logo
+    time.Sleep(time.Second * 2)     // wait for 2 seconds...
+    fmt.Println(AGNES_LOGO_SML)     // print agnes logo
     time.Sleep(time.Second * 2)     // wait for 2 seconds...
     clear()                         // clear the terminal screen
 }
