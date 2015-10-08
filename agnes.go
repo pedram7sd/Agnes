@@ -12,56 +12,52 @@ import ("fmt"
         "strconv"
 )
 
-// Agnes Logo
-// Ἁγνὴ
-const AGNES_LOGO_CAP string =
+// Agnes logo in small case
+const AGNES_LOGO string =
 `
-      ##     #          #############  ###            ####  ####        ####
-      #     ###           ##       ##    ##            #     ##          ##
-           #  ##          ##             # ##          #     ##          ##
-          #    ##         ##             #   ##        #     ##          ##
-         #      ##        ##             #     ##      #     ##############
-        ###########       ##             #       ##    #     ##          ##
-       #          ##      ##             #         ##  #     ##          ##
-      #            ##     ##             #           ###     ##          ##
-    ####           ####  #####         ####   AGNES    #    ####        ####
-`
-
-const AGNES_LOGO_SML string =
-`
-       ########    ##  ###            ##    ##        ###          ##
-     ##        ## ##     ##         ##    ####        ##           #
-    ##          ###       ##       #         ##       #     ###  ######
-    ##          ###        ##    #            ##     #     # ###      ##
-    ##          ###         ##  #              ##   #        ##       ##
-     ##        ## ##         ###                ## #         ##       ##
-       ########    ###       ##       AGNES      ##          ##       ##
-                            ###                                       ##
-                            ##                                         ##
+    ##    #######   ##   ###            ##    ##        ###   ##  ########
+    #   ##       ## ##     ##         ##    ####        ##   # ###       ###
+       ##         ###       ##       #         ##       #      ##         ##
+       ##         ###        ##    #            ##     #       ##         ##
+       ##         ###         ##  #              ##   #        ##         ##
+        ##       ## ##         ###                ## #         ##         ##
+          #######    ###       ##       AGNES      ##          ##         ##
+                              ###                                         ##
+                              ##                                          ##
 `
 
 // global constants
 
 // define a Neural Network
-type NeuralNetwork struct {
-
-}
-
-// define a perceptron
-type Perceptron struct {
-
-}
-
+type NeuralNetwork []Layer
+// define a neuron layer
+type Layer []Neuron
 // define a Neuron
 type Neuron struct {
+    input float64       // sum of all the input
     bias float64        // bias for desired results
-    output bool         // determine 0 or 1 as output
+    weight []float64    // a set of weights that adds up to 1.0
+    output float64      // determine 0 or 1 as output
 }
 
+// sum up all the inputs from the previous layer
+func (this *Neuron) pullInput(prev Layer) {
+    // add up outputs from previous layer and assign to input
+    for _, neuron := range prev { this.input += sigmoid(neuron.output) }
+    this.input += this.bias
+}
+
+//
+
 // Sigmoid function: choose between 0 and 1 based on input value
-func sigmoid(input float64) float64 {
+func sigmoid(x float64) float64 {
     // sigmoid(0.0) = 0.5
-    return 1.0 / (1.0 + math.Pow(math.E, -input))
+    return 1.0 / (1.0 + math.Pow(math.E, -x))
+}
+
+// generate a new neural network
+func genNeuralNet() *NeuralNetwork {
+
 }
 
 // clear the terminal screen
@@ -74,9 +70,7 @@ func clear() {
 // intro
 func intro() {
     clear()                         // clear the terminal screen
-    fmt.Println(AGNES_LOGO_CAP)     // print agnes logo
-    time.Sleep(time.Second * 2)     // wait for 2 seconds...
-    fmt.Println(AGNES_LOGO_SML)     // print agnes logo
+    fmt.Println(AGNES_LOGO)         // print agnes logo
     time.Sleep(time.Second * 2)     // wait for 2 seconds...
     clear()                         // clear the terminal screen
 }
