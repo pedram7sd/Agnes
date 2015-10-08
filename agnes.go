@@ -5,28 +5,33 @@ import ("fmt"
         "os"
         "os/exec"
         "math"
-        "log"
-        "net/smtp"
-        "bytes"
-        "text/template"
-        "strconv"
+        // "log"
+        // "net/smtp"
+        // "bytes"
+        // "text/template"
+        // "strconv"
 )
 
 // Agnes logo in small case
 const AGNES_LOGO string =
 `
-    ##    #######   ##   ###            ##    ##        ###   ##  ########
-    #   ##       ## ##     ##         ##    ####        ##   # ###       ###
-       ##         ###       ##       #         ##       #      ##         ##
-       ##         ###        ##    #            ##     #       ##         ##
-       ##         ###         ##  #              ##   #        ##         ##
-        ##       ## ##         ###                ## #         ##         ##
-          #######    ###       ##       AGNES      ##          ##         ##
-                              ###                                         ##
-                              ##                                          ##
+    ##    #######   ##  ###            ##   ##        ###   ##  ########
+    #   ##       ## ##    ##         ##   ####        ##   # ###       ###
+       ##         ###      ##       #        ##       #      ##         ##
+       ##         ###       ##    #           ##     #       ##         ##
+       ##         ###        ##  #             ##   #        ##         ##
+        ##       ## ##        ###               ## #         ##         ##
+          #######    ###      ##      AGNES      ##          ##         ##
+                             ###                                        ##
+                             ##                                         ##
 `
 
 // global constants
+I_LAYER = 784           // INPUT_LAYER: size of a box (784 = 28 * 28)
+H_LAYER_1 = 100         // HIDDEN LAYER 1
+H_LAYER_2 = 100         // HIDDEN LAYER 2
+H_LAYER_3 = 100         // HIDDEN LAYER 3
+O_LAYER = 10            // OUTPUT_LAYER:
 
 // define a Neural Network
 type NeuralNetwork []Layer
@@ -34,20 +39,24 @@ type NeuralNetwork []Layer
 type Layer []Neuron
 // define a Neuron
 type Neuron struct {
-    input float64       // sum of all the input
-    bias float64        // bias for desired results
-    weight []float64    // a set of weights that adds up to 1.0
-    output float64      // determine 0 or 1 as output
+    input float64
+    output float64
 }
 
-// sum up all the inputs from the previous layer
-func (this *Neuron) pullInput(prev Layer) {
-    // add up outputs from previous layer and assign to input
-    for _, neuron := range prev { this.input += sigmoid(neuron.output) }
-    this.input += this.bias
+// generate and initialize a neural network
+func genNeuralNet() *NeuralNetwork {
+
 }
 
-//
+// generate and initialize a neuron layer
+func genLayer() *Layer {
+
+}
+
+// generate and initialize a neuron
+func genNeuron() *Neuron {
+
+}
 
 // Sigmoid function: choose between 0 and 1 based on input value
 func sigmoid(x float64) float64 {
@@ -55,9 +64,11 @@ func sigmoid(x float64) float64 {
     return 1.0 / (1.0 + math.Pow(math.E, -x))
 }
 
-// generate a new neural network
-func genNeuralNet() *NeuralNetwork {
-
+// feedforward neural network where information flows only one way
+func feedforwardNeuralNet() {
+    // input file
+    // read data
+    brain := genNeuralNet()
 }
 
 // clear the terminal screen
@@ -73,62 +84,6 @@ func intro() {
     fmt.Println(AGNES_LOGO)         // print agnes logo
     time.Sleep(time.Second * 2)     // wait for 2 seconds...
     clear()                         // clear the terminal screen
-}
-
-// **** Send report through email ****
-// Agnes's mail address and password and receiver
-const (
-    AGNES_ADD = ""                      // email address
-    AGNES_PWD = ""                      // password
-    EMAIL_SRV = "smtp.gmail.com"        // email server
-    RCVR_ADD = "jinyeom95@gmail.com"    // receiver's address
-    PORT = 587                          // port
-)
-
-// email template
-const TEMPLATE =
-`From: {{.From}}
-To: {{.To}}
-Subject: {{.Subject}}
-
-{{.Body}}
-
-With love,
-{{.Name}}`
-
-// smtp email template data
-type SmtpTemplateData struct {
-    Name    string      // sender's name
-    From    string      // sender address
-    To      string      // receiver address
-    Subject string      // subject of the mail
-    Body    string      // body of the mail
-}
-
-// send a message through email
-func sendReportMail(subject, body string) {
-    clear()
-    // indicate that mail is being sent
-    fmt.Printf("Sending mail to %s...\n", RCVR_ADD)
-    var err error           // error
-    var doc bytes.Buffer    // buffer of bytes
-    // authorize email
-    auth := smtp.PlainAuth("", AGNES_ADD, AGNES_PWD, EMAIL_SRV)
-    // setup a context for the mail
-    context := &SmtpTemplateData{"Agnes", AGNES_ADD, RCVR_ADD, subject, body}
-    // set up template
-    temp := template.New("Email Template")
-    temp, err = temp.Parse(TEMPLATE)
-    if err != nil { log.Print("error trying to parse mail template") }
-    // write the mail using template and context
-    err = temp.Execute(&doc, context)
-    if err != nil { log.Print("error trying to execute mail template") }
-    // send mail
-    err = smtp.SendMail(EMAIL_SRV+":"+strconv.Itoa(PORT), auth, AGNES_ADD,
-                        []string{RCVR_ADD}, doc.Bytes())
-    if err != nil {
-        log.Print("ERROR: attempting to send a mail ", err)
-    } else { fmt.Println("Mail sent successfully!") }
 }
 
 // Agnes main function
