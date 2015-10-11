@@ -1,2 +1,2 @@
 # Agnes
-Neural Network
+Handwriting Recognition via Neural Network
