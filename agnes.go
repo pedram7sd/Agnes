@@ -5,6 +5,7 @@ import ("fmt"
         "os"
         "os/exec"
         "math"
+        "image"
 )
 
 // Agnes logo in small case
@@ -23,9 +24,10 @@ const AGNES_LOGO string =
 
 // global constants
 const (
-    I_LAYER = 784   // INPUT_LAYER: 784 = 28 * 28
-    H_LAYER = 15    // HIDDEN LAYER: 15 neurons
-    O_LAYER = 10    // OUTPUT_LAYER: from 0 to 9
+    P_FILE = ""     // input file path
+    I_LAYER = 784   // size of input layer (784 = 28 * 28)
+    H_LAYER = 15    // size of hidden layer that can be re-adjusted
+    O_LAYER = 10    // size of output layer (from 0 to 9)
 )
 
 // define a Neural Network
@@ -37,8 +39,8 @@ type NeuralNetwork struct {
 
 // define a Neuron
 type Neuron struct {
-    input float64   // sum of previous layer's outputs
-    output float64  // result of sigmoid function
+    i float64   // sum of previous layer's outputs
+    o float64   // result of sigmoid function
 }
 
 // genrate a neural network
@@ -47,6 +49,12 @@ func genNeuralNetwork() *NeuralNetwork {
     var h []*Neuron = genLayer(H_LAYER)     // hidden layer
     var o []*Neuron = genLayer(O_LAYER)     // output layer
     return &NeuralNetwork{i, h, o}
+}
+
+// read the image data through input layer
+func (this *NeuralNetwork) readImageInput(image []float64) {
+    // each pixel in a greyscale image is an input for each neuron
+    for pixel, neuron := this.inputLayer { neuron.i = image[pixel] }
 }
 
 // generate a neural layer
@@ -62,18 +70,20 @@ func genNeuron() *Neuron { return &Neuron{0.0, 0.0} }
 // Sigmoid function: choose between 0 and 1 based on input value
 func sigmoid(x float64) float64 { return 1.0 / (1.0 + math.Pow(math.E, -x)) }
 
+// convert the image to grayscale
+
 // read and analyze a scanned image of hand-written numbers
-func getImageData() {
-    // input file
-    // create data
+func getImageData() []float64 {
+    // input image file
+    file, err := os.Open(P_FILE)
+    if err != nil { return "FAILED_OPEN_FILE", err }
+    defer file.Close()
+    // create image from the image file
+    img, _, err := image.Decode(file)
+    if err != nil { return "FAILED_DECODE_FILE", err }
+    // create a new grayscale image
+    
     // return data
-}
-
-// feedforward neural network where information flows only one way
-func feedforwardNeuralNet() {
-    getImageData()                  // input file and get data
-    brain := genNeuralNetwork()     // generate a brain
-
 }
 
 // clear the terminal screen
@@ -91,8 +101,16 @@ func intro() {
     clear()                         // clear the terminal screen
 }
 
+// feedforward neural network where information flows only one way
+func feedforwardNeuralNet() {
+    var image []float64 = getImageData()    // input file and get data
+    brain := genNeuralNetwork()             // generate a brain
+    // read the image data with input layer of the brain
+    brain.readImageInput(image)
+}
+
 // Agnes main function
 func main() {
-    intro()             // print intro
-
+    intro()                 // print intro
+    feedforwardNeuralNet()  // recognize hand writing using feedforward
 }
