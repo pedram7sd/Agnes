@@ -73,30 +73,27 @@ func sigmoid(x float64) float64 { return 1.0 / (1.0 + math.Pow(math.E, -x)) }
 // convert the image to grayscale
 
 // read and analyze a scanned image of hand-written numbers
-func getImageData() []int {
+func getImageData() []float64 {
     // input image file
     file, err := os.Open(P_FILE)
-    if err != nil { panic(err.String()) }
+    if err != nil { panic(err) }
     defer file.Close()
 
     // create image from the image file
     img, _, err := image.Decode(file)
-    if err != nil { panic(err.String()) }
+    if err != nil { panic(err) }
 
     // read the input image and organize it into a []int
     bounds := img.Bounds()
-    width, height := bounds.Max.X, bounds.Max.Y
-    grayImg := image.NewGray(width, height)
-    var data []int = make([]int, I_LAYER)
-    index := 0
-    for x := 0; x < width; x++ {
-        for y := 0; y < height; y++ {
-            oldPixel := img.At(x, y)
-            grayPixel := image.ColorModel().Convert(oldPixel)
-            data[index] = grayPixel[0]
-            index++
-        }
-    }
+    w, h := bounds.Max.X, bounds.Max.Y
+    rgbaImg := image.NewRGBA(image.Rect(0, 0, w, h))
+    // re-draw the original image in an RGBA image
+    for x := 0; x < w; x++ { for y := 0; y < h; y++ {
+        rgbaImg.Set(x, y, img.At(x, y))
+    } }
+
+    var data []float64 = make([]float64, I_LAYER)
+
     // return the new color data
     return data
 }
@@ -118,8 +115,8 @@ func intro() {
 
 // feedforward neural network where information flows only one way
 func feedforwardNeuralNet() {
-    var image []int = getImageData()    // input file and get data
-    brain := genNeuralNetwork()         // generate a brain
+    var image []float64 = getImageData()    // input file and get data
+    brain := genNeuralNetwork()             // generate a brain
     // read the image data with input layer of the brain
     brain.readImageInput(image)
 }
