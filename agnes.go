@@ -54,7 +54,7 @@ func genNeuralNetwork() *NeuralNetwork {
 // read the image data through input layer
 func (this *NeuralNetwork) readImageInput(image []float64) {
     // each pixel in a greyscale image is an input for each neuron
-    for pixel, neuron := this.inputLayer { neuron.i = image[pixel] }
+    for pixel, neuron := range this.inputLayer { neuron.i = image[pixel] }
 }
 
 // generate a neural layer
@@ -73,17 +73,32 @@ func sigmoid(x float64) float64 { return 1.0 / (1.0 + math.Pow(math.E, -x)) }
 // convert the image to grayscale
 
 // read and analyze a scanned image of hand-written numbers
-func getImageData() []float64 {
+func getImageData() []int {
     // input image file
     file, err := os.Open(P_FILE)
-    if err != nil { return "FAILED_OPEN_FILE", err }
+    if err != nil { panic(err.String()) }
     defer file.Close()
+
     // create image from the image file
     img, _, err := image.Decode(file)
-    if err != nil { return "FAILED_DECODE_FILE", err }
-    // create a new grayscale image
-    
-    // return data
+    if err != nil { panic(err.String()) }
+
+    // read the input image and organize it into a []int
+    bounds := img.Bounds()
+    width, height := bounds.Max.X, bounds.Max.Y
+    grayImg := image.NewGray(width, height)
+    var data []int = make([]int, I_LAYER)
+    index := 0
+    for x := 0; x < width; x++ {
+        for y := 0; y < height; y++ {
+            oldPixel := img.At(x, y)
+            grayPixel := image.ColorModel().Convert(oldPixel)
+            data[index] = grayPixel[0]
+            index++
+        }
+    }
+    // return the new color data
+    return data
 }
 
 // clear the terminal screen
@@ -103,8 +118,8 @@ func intro() {
 
 // feedforward neural network where information flows only one way
 func feedforwardNeuralNet() {
-    var image []float64 = getImageData()    // input file and get data
-    brain := genNeuralNetwork()             // generate a brain
+    var image []int = getImageData()    // input file and get data
+    brain := genNeuralNetwork()         // generate a brain
     // read the image data with input layer of the brain
     brain.readImageInput(image)
 }

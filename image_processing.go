@@ -4,7 +4,8 @@
 
 package main
 
-import ("os"
+import ("fmt"
+        "os"
         "image"
         "image/color"
         "image/jpeg"
@@ -26,10 +27,16 @@ func toString() {
 // create and export test
 func test() {
     const D = 12
-	img := image.NewGray(image.Rect(0, 0, D, D))
-	for x := 0; x < D; x++ { img.Set(x, x, color.Gray{byte(2 * x)}) }
-    toimg, _ := os.Create("black_box.jpg")
+	img := image.NewGray(image.Rect(1, 1, D, D))
+	for x := 1; x <= D; x++ {
+		img.Set(x, x, color.Gray{byte(20 * x)})
+	}
+	for x := 1; x < D; x++ {
+		fmt.Printf("[%2d, %2d]: %v\n", x, x, img.At(x, x))
+	}
+    toimg, _ := os.Create("new.jpg")
     defer toimg.Close()
+
     jpeg.Encode(toimg, img, &jpeg.Options{jpeg.DefaultQuality})
 }
 
