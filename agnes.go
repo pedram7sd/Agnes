@@ -6,13 +6,14 @@ import ("fmt"
         "os/exec"
         "math"
         "image"
+        "image/jpeg"
 )
 
 // Agnes logo in small case
 const AGNES_LOGO string =
 `
     ##    #######   ##  ###            ##   ##        ###   ##  ########
-    #   ##       ## ##    ##         ##   ####        ##   # ###       ###
+    #   ##       ## ##    ##         ##   ####        ##     ###       ###
        ##         ###      ##       #        ##       #      ##         ##
        ##         ###       ##    #           ##     #       ##         ##
        ##         ###        ##  #             ##   #        ##         ##
@@ -25,6 +26,7 @@ const AGNES_LOGO string =
 // global constants
 const (
     P_FILE = ""     // input file path
+    S_IMG = 500     // size of an image
     I_LAYER = 784   // size of input layer (784 = 28 * 28)
     H_LAYER = 15    // size of hidden layer that can be re-adjusted
     O_LAYER = 10    // size of output layer (from 0 to 9)
@@ -51,12 +53,6 @@ func genNeuralNetwork() *NeuralNetwork {
     return &NeuralNetwork{i, h, o}
 }
 
-// read the image data through input layer
-func (this *NeuralNetwork) readImageInput(image []float64) {
-    // each pixel in a greyscale image is an input for each neuron
-    for pixel, neuron := range this.inputLayer { neuron.i = image[pixel] }
-}
-
 // generate a neural layer
 func genLayer(numNeuron int) []*Neuron {
     var layer []*Neuron = make([]*Neuron, numNeuron)
@@ -70,32 +66,15 @@ func genNeuron() *Neuron { return &Neuron{0.0, 0.0} }
 // Sigmoid function: choose between 0 and 1 based on input value
 func sigmoid(x float64) float64 { return 1.0 / (1.0 + math.Pow(math.E, -x)) }
 
-// convert the image to grayscale
+// create an image
+func test() {
 
-// read and analyze a scanned image of hand-written numbers
-func getImageData() []float64 {
-    // input image file
-    file, err := os.Open(P_FILE)
-    if err != nil { panic(err) }
-    defer file.Close()
+	img := image.NewRGBA(image.Rect(1, 1, S_IMG, S_IMG))
 
-    // create image from the image file
-    img, _, err := image.Decode(file)
-    if err != nil { panic(err) }
+    newImage, _ := os.Create("new.jpg")
+    defer newImage.Close()
 
-    // read the input image and organize it into a []int
-    bounds := img.Bounds()
-    w, h := bounds.Max.X, bounds.Max.Y
-    rgbaImg := image.NewRGBA(image.Rect(0, 0, w, h))
-    // re-draw the original image in an RGBA image
-    for x := 0; x < w; x++ { for y := 0; y < h; y++ {
-        rgbaImg.Set(x, y, img.At(x, y))
-    } }
-
-    var data []float64 = make([]float64, I_LAYER)
-
-    // return the new color data
-    return data
+    jpeg.Encode(newImage, img, &jpeg.Options{jpeg.DefaultQuality})
 }
 
 // clear the terminal screen
@@ -115,14 +94,12 @@ func intro() {
 
 // feedforward neural network where information flows only one way
 func feedforwardNeuralNet() {
-    var image []float64 = getImageData()    // input file and get data
-    brain := genNeuralNetwork()             // generate a brain
-    // read the image data with input layer of the brain
-    brain.readImageInput(image)
+    // brain := genNeuralNetwork()             // generate a brain
 }
 
 // Agnes main function
 func main() {
     intro()                 // print intro
-    feedforwardNeuralNet()  // recognize hand writing using feedforward
+    test()
+    // feedforwardNeuralNet()
 }
